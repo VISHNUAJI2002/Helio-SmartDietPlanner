@@ -2,51 +2,74 @@
 {% block content %}
 
 <div class="container mt-4">
-    <div class="card shadow-sm p-4 mx-auto" style="max-width: 800px; border: none; border-radius: 12px;">
-        <div class="card-body">
-            <h2 class="card-title text-info mb-3">Create Your Workout Plan</h2>
-            <p class="card-subtitle mb-4 text-muted">
-                Tell us your goals and available time to generate a personalized workout routine.
-            </p>
+    <div class="row"> {# Start of the main row for side-by-side layout #}
 
-            <form id="workout-form">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label for="goal" class="form-label fw-bold">Your Fitness Goal</label>
-                        <select id="goal" name="goal" class="form-select" required>
-                            <option value="Weight Loss">Weight Loss</option>
-                            <option value="Muscle Building">Muscle Building</option>
-                            <option value="General Fitness">General Fitness</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="level" class="form-label fw-bold">Your Fitness Level</label>
-                        <select id="level" name="level" class="form-select" required>
-                            <option value="Beginner">Beginner</option>
-                            <option value="Intermediate">Active</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="duration" class="form-label fw-bold">Time per day</label>
-                        <select id="duration" name="duration" class="form-select" required>
-                            <option value="15-20">15-20 minutes</option>
-                            <option value="30-40">30-40 minutes</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-info text-white btn-lg">Generate Workout</button>
-                </div>
-            </form>
-        </div>
-    </div>
+        {# Left Column: Workout Creation Form #}
+        <div class="col-md-6 mb-4"> {# Takes up half width on medium screens and up #}
+            <div class="card shadow-sm p-4 h-100" style="border: none; border-radius: 12px;"> {# Added h-100 for equal height #}
+                <div class="card-body">
+                    <h2 class="card-title text-info mb-3">Create Your Workout Plan</h2>
+                    <p class="card-subtitle mb-4 text-muted">
+                        Tell us your goals and available time to generate a personalized workout routine.
+                    </p>
 
-    <div id="workout-result-container" class="mt-4" style="display: none;">
-        <div class="card shadow-sm p-4 mx-auto" style="max-width: 800px; border: none; border-radius: 12px;">
-            <div class="card-body" id="workout-result-content">
+                    <form id="workout-form">
+                        <div class="row g-3">
+                            <div class="col-md-12"> {# Changed to col-md-12 to stack inputs vertically within this column #}
+                                <label for="goal" class="form-label fw-bold">Your Fitness Goal</label>
+                                <select id="goal" name="goal" class="form-select" required>
+                                    <option value="Weight Loss">Weight Loss</option>
+                                    <option value="Muscle Building">Muscle Building</option>
+                                    <option value="General Fitness">General Fitness</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12"> {# Changed to col-md-12 #}
+                                <label for="level" class="form-label fw-bold">Your Fitness Level</label>
+                                <select id="level" name="level" class="form-select" required>
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Active</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12"> {# Changed to col-md-12 #}
+                                <label for="duration" class="form-label fw-bold">Time per day</label>
+                                <select id="duration" name="duration" class="form-select" required>
+                                    <option value="15-20">15-20 minutes</option>
+                                    <option value="30-40">30-40 minutes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-info text-white btn-lg">Generate Workout</button>
+                        </div>
+                    </form>
                 </div>
+            </div>
         </div>
-    </div>
+
+        {# Right Column: Workout Result Container #}
+        <div class="col-md-6 mb-4"> {# Takes up half width on medium screens and up #}
+            <div id="workout-result-container" style="display: none;">
+                <div class="card shadow-sm p-4 h-100" style="border: none; border-radius: 12px;"> {# Added h-100 for equal height #}
+                    <div class="card-body" id="workout-result-content">
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-person-workspace" style="font-size: 3rem;"></i>
+                            <p class="mt-3">Your personalized workout plan will appear here after you generate it.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {# This div below will show if no workout has been generated yet #}
+            <div id="initial-message" class="card shadow-sm p-4 h-100" style="border: none; border-radius: 12px;">
+                <div class="card-body">
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-person-workspace" style="font-size: 3rem; color: #ced4da;"></i>
+                        <p class="mt-3">Your personalized workout plan will appear here after you generate it.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div> {# End of the main row #}
 </div>
 
 <script>
@@ -54,6 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('workout-form');
     const resultContainer = document.getElementById('workout-result-container');
     const resultContent = document.getElementById('workout-result-content');
+    const initialMessage = document.getElementById('initial-message'); // Reference to the initial message
 
     // --- START OF NEW HELPER FUNCTIONS ---
     function printWorkoutPlan() {
@@ -101,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // NEW WHATSAPP SHARE FUNCTION for workout_planner.html
     function shareWorkoutPlanOnWhatsApp() {
         const text = encodeURIComponent(getShareableWorkoutText());
         window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
@@ -110,8 +133,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     form.addEventListener('submit', function(event) {
         event.preventDefault();
-        resultContainer.style.display = 'block';
+        initialMessage.style.display = 'none'; // Hide the initial message
+        resultContainer.style.display = 'block'; // Show the result container
         resultContent.innerHTML = `<div class="text-center"><div class="spinner-border text-info" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Finding the best workout for you...</p></div>`;
+        
         const formData = new FormData(form);
         const url = new URL("{{ url_for('workout_planner') }}", window.location.origin);
         url.searchParams.append('goal', formData.get('goal'));
@@ -146,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
                               </button>
                               <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#" id="copy-workout-btn"><i class="bi bi-clipboard"></i> Copy to Clipboard</a></li>
-                                <li><a class="dropdown-item" href="#" id="whatsapp-share-workout-btn"><i class="bi bi-whatsapp"></i> Share on WhatsApp</a></li> {# NEW WHATSAPP SHARE BUTTON #}
+                                <li><a class="dropdown-item" href="#" id="whatsapp-share-workout-btn"><i class="bi bi-whatsapp"></i> Share on WhatsApp</a></li>
                                 <li class="${nativeShareSupported}"><a class="dropdown-item" href="#" id="native-share-workout-btn"><i class="bi bi-three-dots"></i> More Options...</a></li>
                               </ul>
                             </div>
@@ -166,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const printButton = event.target.closest('#print-workout-btn');
         const copyButton = event.target.closest('#copy-workout-btn');
         const nativeShareButton = event.target.closest('#native-share-workout-btn');
-        const whatsappShareButton = event.target.closest('#whatsapp-share-workout-btn'); // NEW: WhatsApp button for workout
+        const whatsappShareButton = event.target.closest('#whatsapp-share-workout-btn');
 
         if (saveButton) {
             const title = resultContent.querySelector('h3').innerText;
@@ -209,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             nativeShareWorkoutPlan();
         }
-        if (whatsappShareButton) { // NEW: WhatsApp handler for workout
+        if (whatsappShareButton) {
             event.preventDefault();
             shareWorkoutPlanOnWhatsApp();
         }
