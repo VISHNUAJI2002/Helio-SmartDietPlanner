@@ -7,7 +7,6 @@
         <p class="text-muted">Here are all the diets and workouts you've saved for future reference.</p>
     </div>
 
-    <!-- Tab Navigation -->
     <ul class="nav nav-tabs" id="savedPlansTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="diets-tab" data-bs-toggle="tab" data-bs-target="#diets-content" type="button" role="tab" aria-controls="diets-content" aria-selected="true">
@@ -21,15 +20,14 @@
         </li>
     </ul>
 
-    <!-- Tab Content -->
     <div class="tab-content" id="savedPlansTabContent">
         
-        <!-- Diets Tab Pane -->
         <div class="tab-pane fade show active" id="diets-content" role="tabpanel" aria-labelledby="diets-tab">
             <div class="py-4">
                 {% if saved_diets %}
                     <div class="row">
                         {% for plan in saved_diets %}
+                            {# MODIFIED: Changed col-lg-4 to col-lg-6 to make cards wider #}
                             <div class="col-md-6 col-lg-4 mb-4 plan-card" id="plan-card-{{ plan._id }}">
                                 <div class="card shadow-sm h-100">
                                     <div class="card-body d-flex flex-column">
@@ -62,13 +60,13 @@
             </div>
         </div>
 
-        <!-- Workouts Tab Pane -->
         <div class="tab-pane fade" id="workouts-content" role="tabpanel" aria-labelledby="workouts-tab">
              <div class="py-4">
                 {% if saved_workouts %}
                     <div class="row">
                         {% for workout in saved_workouts %}
-                            <div class="col-md-6 col-lg-4 mb-4 plan-card" id="plan-card-{{ workout._id }}">
+                            {# MODIFIED: Changed col-lg-4 to col-lg-6 to make cards wider #}
+                            <div class="col-md-6 col-lg-6 mb-4 plan-card" id="plan-card-{{ workout._id }}">
                                 <div class="card shadow-sm h-100">
                                     <div class="card-body d-flex flex-column">
                                         <div>
@@ -78,9 +76,14 @@
                                             <hr>
                                             <ul class="list-group list-group-flush">
                                                 {% for exercise in workout.plan %}
-                                                <li class="list-group-item d-flex justify-content-between align-items-center ps-0">
-                                                    <span>{{ exercise.name }}</span>
-                                                    <span class="badge bg-primary rounded-pill">{{ exercise.reps_or_duration }}</span>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap ps-0">
+                                                    <div>
+                                                        <span>{{ exercise.name }}</span>
+                                                        <span class="badge bg-primary rounded-pill ms-2">{{ exercise.reps_or_duration }}</span>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-info mt-2 mt-sm-0 how-to-button" data-exercise-name="{{ exercise.name }}" title="Watch on YouTube">
+                                                        <i class="bi bi-youtube"></i> How-to
+                                                    </button>
                                                 </li>
                                                 {% endfor %}
                                             </ul>
@@ -107,7 +110,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -130,6 +132,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     let planIdToDelete = null;
     let planTypeToDelete = null;
+
+    function openYouTubeHowTo(exerciseName) {
+        const searchQuery = encodeURIComponent(`${exerciseName} workout tutorial`);
+        window.open(`https://www.youtube.com/results?search_query=${searchQuery}`, '_blank');
+    }
 
     deleteModalElement.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
@@ -183,7 +190,16 @@ document.addEventListener('DOMContentLoaded', function () {
             planTypeToDelete = null;
         });
     });
+
+    document.getElementById('workouts-content').addEventListener('click', function(event) {
+        const howToButton = event.target.closest('.how-to-button');
+        if (howToButton) {
+            event.preventDefault();
+            const exerciseName = howToButton.dataset.exerciseName;
+            openYouTubeHowTo(exerciseName);
+        }
+    });
+
 });
 </script>
 {% endblock %}
-

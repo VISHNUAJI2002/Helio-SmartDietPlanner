@@ -2,11 +2,11 @@
 {% block content %}
 
 <div class="container mt-4">
-    <div class="row"> {# Start of the main row for side-by-side layout #}
+    <div class="row">
 
         {# Left Column: Workout Creation Form #}
-        <div class="col-md-6 mb-4"> {# Takes up half width on medium screens and up #}
-            <div class="card shadow-sm p-4 h-100" style="border: none; border-radius: 12px;"> {# Added h-100 for equal height #}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm p-4 h-100" style="border: none; border-radius: 12px;">
                 <div class="card-body">
                     <h2 class="card-title text-info mb-3">Create Your Workout Plan</h2>
                     <p class="card-subtitle mb-4 text-muted">
@@ -15,7 +15,7 @@
 
                     <form id="workout-form">
                         <div class="row g-3">
-                            <div class="col-md-12"> {# Changed to col-md-12 to stack inputs vertically within this column #}
+                            <div class="col-md-12">
                                 <label for="goal" class="form-label fw-bold">Your Fitness Goal</label>
                                 <select id="goal" name="goal" class="form-select" required>
                                     <option value="Weight Loss">Weight Loss</option>
@@ -23,14 +23,14 @@
                                     <option value="General Fitness">General Fitness</option>
                                 </select>
                             </div>
-                            <div class="col-md-12"> {# Changed to col-md-12 #}
+                            <div class="col-md-12">
                                 <label for="level" class="form-label fw-bold">Your Fitness Level</label>
                                 <select id="level" name="level" class="form-select" required>
                                     <option value="Beginner">Beginner</option>
                                     <option value="Intermediate">Active</option>
                                 </select>
                             </div>
-                            <div class="col-md-12"> {# Changed to col-md-12 #}
+                            <div class="col-md-12">
                                 <label for="duration" class="form-label fw-bold">Time per day</label>
                                 <select id="duration" name="duration" class="form-select" required>
                                     <option value="15-20">15-20 minutes</option>
@@ -47,14 +47,11 @@
         </div>
 
         {# Right Column: Workout Result Container #}
-        <div class="col-md-6 mb-4"> {# Takes up half width on medium screens and up #}
+        <div class="col-md-6 mb-4">
             <div id="workout-result-container" style="display: none;">
-                <div class="card shadow-sm p-4 h-100" style="border: none; border-radius: 12px;"> {# Added h-100 for equal height #}
+                <div class="card shadow-sm p-4 h-100" style="border: none; border-radius: 12px;">
                     <div class="card-body" id="workout-result-content">
-                        <div class="text-center text-muted py-5">
-                            <i class="bi bi-person-workspace" style="font-size: 3rem;"></i>
-                            <p class="mt-3">Your personalized workout plan will appear here after you generate it.</p>
-                        </div>
+                        {# Content will be injected here #}
                     </div>
                 </div>
             </div>
@@ -69,7 +66,7 @@
             </div>
         </div>
 
-    </div> {# End of the main row #}
+    </div>
 </div>
 
 <script>
@@ -77,14 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('workout-form');
     const resultContainer = document.getElementById('workout-result-container');
     const resultContent = document.getElementById('workout-result-content');
-    const initialMessage = document.getElementById('initial-message'); // Reference to the initial message
+    const initialMessage = document.getElementById('initial-message');
 
-    // --- START OF NEW HELPER FUNCTIONS ---
     function printWorkoutPlan() {
         const title = resultContent.querySelector('h3').innerText;
         const planContent = resultContent.querySelector('#workout-plan-content').innerHTML;
         const printWindow = window.open('', '_blank');
-        printWindow.document.write(`<html><head><title>${title}</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"><style>body{padding:2rem}.list-group-item{border:none;padding-left:0}</style></head><body><h2>${title}</h2><hr>${planContent}</body></html>`);
+        printWindow.document.write(`<html><head><title>${title}</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"><style>body{padding:2rem}.list-group-item{border:none;padding-left:0; .btn-how-to{display:none;}}</style></head><body><h2>${title}</h2><hr>${planContent}</body></html>`);
         printWindow.document.close();
         printWindow.focus();
         setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
@@ -96,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const exercises = resultContent.querySelectorAll('#workout-plan-content .list-group-item');
         exercises.forEach(item => {
             const name = item.querySelector('span:first-child').innerText;
-            const reps = item.querySelector('span.badge').innerText;
+            const reps = item.querySelector('.badge').innerText;
             exercisesText += `- ${name} (${reps})\n`;
         });
         return `My Helio Workout Plan: ${title}\n\n${exercisesText}`;
@@ -129,12 +125,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const text = encodeURIComponent(getShareableWorkoutText());
         window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
     }
-    // END NEW WHATSAPP SHARE FUNCTION
+
+    // NEW FUNCTION: Open YouTube search for an exercise
+    function openYouTubeHowTo(exerciseName) {
+        const searchQuery = encodeURIComponent(`${exerciseName} workout tutorial`);
+        window.open(`https://www.youtube.com/results?search_query=${searchQuery}`, '_blank');
+    }
 
     form.addEventListener('submit', function(event) {
         event.preventDefault();
-        initialMessage.style.display = 'none'; // Hide the initial message
-        resultContainer.style.display = 'block'; // Show the result container
+        initialMessage.style.display = 'none';
+        resultContainer.style.display = 'block';
         resultContent.innerHTML = `<div class="text-center"><div class="spinner-border text-info" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Finding the best workout for you...</p></div>`;
         
         const formData = new FormData(form);
@@ -152,7 +153,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     const nativeShareSupported = navigator.share ? '' : 'd-none';
                     let exercisesHtml = '';
                     workout.plan.forEach(exercise => {
-                        exercisesHtml += `<li class="list-group-item d-flex justify-content-between align-items-center"><span>${exercise.name}</span><span class="badge bg-primary rounded-pill">${exercise.reps_or_duration}</span></li>`;
+                        exercisesHtml += `
+                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                                <div>
+                                    <span>${exercise.name}</span>
+                                    <span class="badge bg-primary rounded-pill ms-2">${exercise.reps_or_duration}</span>
+                                </div>
+                                <button class="btn btn-sm btn-outline-info mt-2 mt-sm-0 btn-how-to" data-exercise-name="${exercise.name}" title="Watch on YouTube">
+                                    <i class="bi bi-youtube"></i> How-to
+                                </button>
+                            </li>`;
                     });
                     
                     resultContent.innerHTML = `
@@ -192,13 +202,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const copyButton = event.target.closest('#copy-workout-btn');
         const nativeShareButton = event.target.closest('#native-share-workout-btn');
         const whatsappShareButton = event.target.closest('#whatsapp-share-workout-btn');
+        const howToButton = event.target.closest('.btn-how-to'); // NEW: How-to button
 
         if (saveButton) {
             const title = resultContent.querySelector('h3').innerText;
             const description = resultContent.querySelector('p').innerText;
             const exercises = Array.from(resultContent.querySelectorAll('.list-group-item')).map(item => ({
                 name: item.querySelector('span:first-child').innerText,
-                reps_or_duration: item.querySelector('span.badge').innerText
+                reps_or_duration: item.querySelector('.badge').innerText
             }));
             const payload = { title, description, plan: exercises };
             
@@ -237,6 +248,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (whatsappShareButton) {
             event.preventDefault();
             shareWorkoutPlanOnWhatsApp();
+        }
+        if (howToButton) { // NEW: How-to button handler
+            event.preventDefault();
+            const exerciseName = howToButton.dataset.exerciseName;
+            openYouTubeHowTo(exerciseName);
         }
     });
 });
