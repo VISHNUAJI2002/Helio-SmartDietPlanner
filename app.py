@@ -253,7 +253,7 @@ def get_prediction():
             float(profile.get("sleep_hours") or 7),
         ]
     except (ValueError, TypeError):
-        return jsonify({"success": False, "message": "Invalid data in profile. Please check your details."})
+        return jsonify({"success": False, "message": "Insufficient data in profile. Please check your details."})
 
     features_scaled = scaler.transform([features])
     prediction = model.predict(features_scaled)
