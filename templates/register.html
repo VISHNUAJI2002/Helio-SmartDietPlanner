@@ -35,6 +35,14 @@
             <label for="username" class="form-label">Username</label>
             <input type="text" class="form-control" name="username" required autocomplete="off">
           </div>
+          
+          <!-- --- NEW: Email Field Added --- -->
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" name="email" required autocomplete="off">
+          </div>
+          <!-- --- END NEW --- -->
+
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>
             <input type="password" class="form-control" id="password" name="password" required autocomplete="new-password">
@@ -64,7 +72,7 @@
   </div>
 </div>
 
-<!-- MODIFIED: JavaScript with enhanced validation -->
+<!-- JavaScript with enhanced validation -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const showPasswordCheckbox = document.getElementById('showPassword');
@@ -73,14 +81,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const registerForm = document.getElementById('registerForm');
   const passwordError = document.getElementById('passwordError');
 
-  // Logic for showing/hiding password (unchanged)
+  // Logic for showing/hiding password
   showPasswordCheckbox.addEventListener('change', function() {
     const type = this.checked ? 'text' : 'password';
     passwordField.setAttribute('type', type);
     confirmPasswordField.setAttribute('type', type);
   });
 
-  // --- START OF NEW VALIDATION LOGIC ---
+  // Client-side validation logic
   registerForm.addEventListener('submit', function(event) {
     const password = passwordField.value;
     const confirmPassword = confirmPasswordField.value;
@@ -118,8 +126,8 @@ document.addEventListener('DOMContentLoaded', function () {
     
     // If all checks pass, the form will submit normally.
   });
-  // --- END OF NEW VALIDATION LOGIC ---
 });
 </script>
 
 {% endblock %}
+

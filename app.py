@@ -11,7 +11,10 @@ import tensorflow as tf
 import random
 from datetime import datetime
 import json
-import re # ADDED: For more complex validation using regular expressions
+import re 
+from itsdangerous import URLSafeTimedSerializer
+# --- NEW: Import Flask-Mail ---
+from flask_mail import Mail, Message
 
 load_dotenv()
 
@@ -19,12 +22,26 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/ProjectHelio")
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey")
 
+# --- NEW: Configure Flask-Mail ---
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True').lower() in ['true', 'on', '1']
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+
+mail = Mail(app) # Initialize Flask-Mail
+
 mongo = PyMongo(app)
 
-# Load trained model + preprocessing
+s = URLSafeTimedSerializer(app.secret_key)
+
+# --- CORRECT: Models are loaded correctly here ---
 model = tf.keras.models.load_model("model/diet_model.keras")
 scaler = joblib.load("model/scaler.pkl")
 meal_encoder = joblib.load("model/meal_encoder.pkl")
+# --- END CORRECT ---
+
 
 # --- Load Diet, Workout, and Health Tip Data ---
 def load_diet_plans():
@@ -67,6 +84,7 @@ class User(UserMixin):
         self.id = str(user_data["_id"])
         self.username = user_data["username"]
         self.password_hash = user_data["password"]
+        self.email = user_data.get("email")
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -85,9 +103,9 @@ def index():
 def register():
     if request.method == "POST":
         username = request.form.get("username")
+        email = request.form.get("email") 
         password = request.form.get("password")
         
-        # --- START OF MODIFIED CODE: Enhanced Password Validation ---
         if len(password) < 5:
             flash("Password must be at least 5 characters long.", "danger")
             return redirect(url_for("register"))
@@ -97,14 +115,17 @@ def register():
         if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
             flash("Password must contain at least one special character.", "danger")
             return redirect(url_for("register"))
-        # --- END OF MODIFIED CODE ---
 
         if mongo.db.users.find_one({"username": username}):
             flash("Username already exists!", "danger")
             return redirect(url_for("register"))
+        
+        if mongo.db.users.find_one({"email": email}):
+            flash("Email address is already registered.", "danger")
+            return redirect(url_for("register"))
             
         hashed_pw = generate_password_hash(password)
-        mongo.db.users.insert_one({"username": username, "password": hashed_pw})
+        mongo.db.users.insert_one({"username": username, "email": email, "password": hashed_pw})
         flash("Registration successful! Please login.", "success")
         return redirect(url_for("login"))
     return render_template("register.html")
@@ -113,15 +134,66 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form.get("username")
+        email = request.form.get("email")
         password = request.form.get("password")
-        user_data = mongo.db.users.find_one({"username": username})
+        user_data = mongo.db.users.find_one({"email": email})
         if user_data and check_password_hash(user_data["password"], password):
             user = User(user_data)
             login_user(user)
             return redirect(url_for("dashboard"))
-        flash("Invalid username or password", "danger")
+        flash("Invalid email or password", "danger")
     return render_template("login.html")
+
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+        user = mongo.db.users.find_one({"email": email})
+
+        if user:
+            token = s.dumps(email, salt='password-reset-salt')
+            reset_url = url_for('reset_password', token=token, _external=True)
+            
+            try:
+                subject = "Password Reset Request for Helio"
+                body = f"Hello,\n\nPlease click the following link to reset your password:\n{reset_url}\n\nIf you did not request this, please ignore this email."
+                msg = Message(subject=subject, recipients=[email], body=body)
+                mail.send(msg)
+                flash("A password reset link has been sent to your email.", "success")
+            except Exception as e:
+                print(f"Email sending failed: {e}")
+                flash("Failed to send reset email. Please try again later.", "danger")
+        else:
+            flash("Email address not found.", "danger")
+        
+        return redirect(url_for("forgot_password"))
+        
+    return render_template("forgot_password.html")
+
+
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    try:
+        email = s.loads(token, salt='password-reset-salt', max_age=1800)
+    except:
+        flash("The password reset link is invalid or has expired.", "danger")
+        return redirect(url_for("forgot_password"))
+
+    if request.method == "POST":
+        new_password = request.form.get("password")
+        
+        if len(new_password) < 5:
+            flash("Password must be at least 5 characters long.", "danger")
+            return render_template("reset_password.html", token=token)
+
+        hashed_pw = generate_password_hash(new_password)
+        mongo.db.users.update_one({"email": email}, {"$set": {"password": hashed_pw}})
+        
+        flash("Your password has been reset successfully! You can now login.", "success")
+        return redirect(url_for("login"))
+
+    return render_template("reset_password.html", token=token)
 
 
 @app.route("/dashboard")
@@ -163,6 +235,8 @@ def profile():
     profile = mongo.db.profiles.find_one({"user_id": current_user.id})
     return render_template("profile.html", profile=profile)
 
+
+# --- REMOVED: Duplicate and incorrect model loading lines were here ---
 
 @app.route("/get-prediction")
 @login_required

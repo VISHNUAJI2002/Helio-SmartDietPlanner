@@ -72,13 +72,11 @@
     font-size: 1.05rem;
   }
 
-  /* NEW: Style for the show/hide password icon */
   #togglePassword {
       cursor: pointer;
   }
 
   @media (min-width: 768px) {
-
     .left-col,
     .right-col {
       flex: 0 0 50%;
@@ -102,12 +100,13 @@
       <div class="login-card">
         <h2>Login</h2>
         <form method="POST">
+          <!-- --- MODIFIED: Changed username to email --- -->
           <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" name="username" required>
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" name="email" required>
           </div>
+          <!-- --- END MODIFIED --- -->
           
-          <!-- START OF CHANGES: Password Input Group -->
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>
             <div class="input-group">
@@ -118,12 +117,18 @@
                 </span>
             </div>
           </div>
-          <!-- END OF CHANGES -->
 
           <div class="d-grid">
             <button type="submit" class="btn btn-success btn-lg">Login</button>
           </div>
         </form>
+
+        <!-- --- NEW: Forgot Password Link --- -->
+        <div class="text-center mt-2">
+            <a href="{{ url_for('forgot_password') }}" class="text-muted small">Forgot Password?</a>
+        </div>
+        <!-- --- END NEW --- -->
+
         <p class="text-center mt-3 mb-0">
           Don’t have an account?
           <a href="{{ url_for('register') }}" class="text-success fw-bold">Register</a>
@@ -133,7 +138,7 @@
   </div>
 </div>
 
-<!-- NEW: JavaScript to handle the show/hide functionality -->
+<!-- JavaScript to handle the show/hide functionality -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const togglePassword = document.getElementById('togglePassword');
@@ -160,3 +165,4 @@
 </script>
 
 {% endblock %}
+

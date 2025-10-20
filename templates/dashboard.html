@@ -13,18 +13,19 @@
                 <div class="card-body text-center">
                     <h4 class="card-title text-success mb-3">Your BMI Status</h4>
                     {% if profile and profile.bmi %}
-                        <div id="bmi_chart_div"></div>
+                    <div id="bmi_chart_div"></div>
                     {% else %}
-                        <div class="d-flex align-items-center justify-content-center h-100 p-3">
-                            <div>
-                                <p class="text-muted">Your BMI will appear here once you complete your profile.</p>
-                                <a href="{{ url_for('profile') }}" class="btn btn-primary">Complete Profile</a>
-                            </div>
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
+                        <div>
+                            <p class="text-muted">Your BMI will appear here once you complete your profile.</p>
+                            <a href="{{ url_for('profile') }}" class="btn btn-primary">Complete Profile</a>
                         </div>
+                    </div>
                     {% endif %}
                 </div>
             </div>
-            
+
+            <!-- NEW: Daily Health Tip Card -->
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h4 class="card-title text-primary"><i class="bi bi-lightbulb"></i> Tip of the Day</h4>
@@ -50,7 +51,8 @@
             <div id="prediction-container" class="card shadow-sm" style="display: none;">
                 <div class="card-body">
                     <div id="loading-spinner" class="text-center" style="display: none;">
-                        <div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div>
+                        <div class="spinner-border text-success" role="status"><span
+                                class="visually-hidden">Loading...</span></div>
                         <p class="mt-2">Generating your personalized plan...</p>
                     </div>
                     <div id="prediction-result"></div>
@@ -87,7 +89,7 @@
         const predictionContainer = document.getElementById('prediction-container');
         const predictionResultDiv = document.getElementById('prediction-result');
         const loadingSpinner = document.getElementById('loading-spinner');
-        
+
         // --- DIET PREDICTION HELPER FUNCTIONS (FULLY RESTORED) ---
         function printDietPlan() {
             const planContent = document.getElementById('diet-plan-content').innerHTML;
@@ -140,7 +142,7 @@
             const breakfast = document.getElementById('breakfast-item').innerText;
             const lunch = document.getElementById('lunch-item').innerText;
             const dinner = document.getElementById('dinner-item').innerText;
-            
+
             const payload = {
                 meal_plan_name: mealPlanName,
                 meals: { Breakfast: breakfast, Lunch: lunch, Dinner: dinner }
@@ -151,25 +153,25 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    buttonElement.innerHTML = `<i class="bi bi-bookmark-check-fill"></i> Saved!`;
-                    buttonElement.classList.remove('btn-outline-primary');
-                    buttonElement.classList.add('btn-primary', 'disabled');
-                } else {
-                    alert(data.message || 'Could not save the plan.');
-                }
-            })
-            .catch(error => {
-                console.error('Save Error:', error);
-                alert('An error occurred while saving.');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        buttonElement.innerHTML = `<i class="bi bi-bookmark-check-fill"></i> Saved!`;
+                        buttonElement.classList.remove('btn-outline-primary');
+                        buttonElement.classList.add('btn-primary', 'disabled');
+                    } else {
+                        alert(data.message || 'Could not save the plan.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Save Error:', error);
+                    alert('An error occurred while saving.');
+                });
         }
-        
+
         function findGroceryStore() {
             if ('geolocation' in navigator) {
-                navigator.geolocation.getCurrentPosition(function(position) {
+                navigator.geolocation.getCurrentPosition(function (position) {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
                     const mapUrl = `http://google.com/maps?q=grocery+stores+near+me&ll=${lat},${lon}&z=15`;
@@ -207,7 +209,7 @@
             const dietName = document.getElementById('meal-plan-name-hidden').value;
             const currentMealSpan = document.getElementById(`${mealType}-item`);
             const currentMeal = currentMealSpan.innerText;
-            
+
             swapButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
             swapButton.disabled = true;
 
@@ -237,8 +239,8 @@
                     swapButton.disabled = false;
                 });
         }
-        
-        predictBtn.addEventListener('click', function () { 
+
+        predictBtn.addEventListener('click', function () {
             predictionContainer.style.display = 'block';
             predictionResultDiv.innerHTML = '';
             loadingSpinner.style.display = 'block';
@@ -308,7 +310,7 @@
                 });
         });
 
-        predictionResultDiv.addEventListener('click', function(event) {
+        predictionResultDiv.addEventListener('click', function (event) {
             const printBtn = event.target.closest('#print-plan-btn');
             const copyBtn = event.target.closest('#copy-plan-btn');
             const nativeShareBtn = event.target.closest('#native-share-btn');

@@ -1,57 +1,188 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+    body {
+        background-color: #f8f9fa; /* Light grey background */
+    }
 
-<div class="container mt-5">
-    <div class="card shadow-sm p-4" style="max-width: 1100px; margin-left: 40px; border-radius: 12px; border: none;">
+    .profile-container {
+        max-width: 1250px;
+        margin: auto;
+    }
 
-        {% if profile and profile.age %}
-        <div class="row">
+    /* Use standard Bootstrap font, no custom font-family needed */
 
-            <div class="col-lg-7">
-                <div class="card p-4" style="border: none; border-radius: 12px;">
-                    <h3 class="mb-3 text-success text-start">Your Profile</h3>
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-6 mb-3"><strong>Age:</strong> {{ profile.age }}</div>
-                        <div class="col-md-6 mb-3"><strong>Gender:</strong>
-                            {% if profile.gender == "0" %}Male{% else %}Female{% endif %}
+    /* General Card Styling */
+    .info-card {
+        background-color: #fff;
+        border-radius: 9px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+        padding: 30px;
+        margin-bottom: 25px;
+    }
+
+    .info-card h3 {
+        color: #343a40; /* Darker text for titles */
+        font-weight: 600; /* Bold, but not overly heavy */
+        margin-bottom: 25px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e9ecef;
+        font-size: 1.5rem; /* Consistent title size */
+    }
+    
+    /* Main Welcome Header */
+    .welcome-header h2 { /* MODIFIED: Changed from h1 to h2 to match HTML */
+        font-weight: 600;
+        color: #212529;
+    }
+    .welcome-header p {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    /* Health Metrics & Details Styling */
+    .metric-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        font-size: 1rem; /* Standard body font size */
+    }
+    .metric-item strong {
+        color: #343a40;
+        width: 170px; /* Adjusted for alignment */
+    }
+    .metric-item span {
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    /* Health Tips Card */
+    .tip-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 15px;
+        color: #495057;
+    }
+    .tip-icon {
+        font-size: 1.5rem;
+        color: #198754;
+        margin-top: 3px;
+    }
+    .tip-item p {
+        margin-bottom: 0;
+    }
+
+    /* Profile Completion Bar styles */
+    .progress-bar {
+        height: 12px;
+        border-radius: 10px;
+        transition: width 0.4s ease-in-out;
+    }
+    .progress-label {
+        font-weight: 500;
+        color: #495057;
+        font-size: 0.9rem;
+    }
+
+</style>
+
+<div class="container profile-container mt-4">
+    
+    {% if profile and profile.age %}
+
+    <div class="welcome-header mb-4">
+        <h2>Your Profile</h2>
+        <p>Here’s a summary of your current health status and details.</p>
+    </div>
+
+    <div class="row">
+        <!-- --- LEFT CARD: PERSONAL & HEALTH DETAILS --- -->
+        <div class="col-lg-7">
+            <div class="info-card">
+                <h3>Your Details</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="metric-item"><strong>Age:</strong> <span>{{ profile.age }}</span></div>
+                        <div class="metric-item"><strong>Height (cm):</strong> <span>{{ profile.height_cm }}</span>
                         </div>
-                        <div class="col-md-6 mb-3"><strong>Height (cm):</strong> {{ profile.height_cm }}</div>
-                        <div class="col-md-6 mb-3"><strong>Weight (kg):</strong> {{ profile.weight_kg }}</div>
-                        <div class="col-md-6 mb-3"><strong>BMI:</strong> {{ "%.2f"|format(profile.bmi|float) }}</div>
-                        <div class="col-md-6 mb-3"><strong>Chronic Disease:</strong>
-                            {% if profile.chronic_disease == "1" %}Yes{% else %}No{% endif %}
+                        <div class="metric-item"><strong>Chronic Disease:</strong> <span>{% if profile.chronic_disease
+                                == "1" %}Yes{% else %}No{% endif %}</span></div>
+                        <div class="metric-item"><strong>BP Systolic:</strong> <span>{{ profile.blood_pressure_systolic
+                                }}</span></div>
+                        <div class="metric-item"><strong>Cholesterol Level:</strong> <span>{{ profile.cholesterol_level
+                                }}</span></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="metric-item"><strong>Gender:</strong> <span>{% if profile.gender == "0" %}Male{%
+                                else %}Female{% endif %}</span></div>
+                        <div class="metric-item"><strong>Weight (kg):</strong> <span>{{ profile.weight_kg }}</span>
                         </div>
-                        <div class="col-md-6 mb-3"><strong>BP Systolic:</strong> {{ profile.blood_pressure_systolic }}</div>
-                        <div class="col-md-6 mb-3"><strong>BP Diastolic:</strong> {{ profile.blood_pressure_diastolic }}</div>
-                        <div class="col-md-6 mb-3"><strong>Cholesterol Level:</strong> {{ profile.cholesterol_level }}</div>
-                        <div class="col-md-6 mb-3"><strong>Blood Sugar Level:</strong> {{ profile.blood_sugar_level }}</div>
-                        <div class="col-md-6 mb-3"><strong>Sleep Hours:</strong> {{ profile.sleep_hours }}</div>
+                        <div class="metric-item"><strong>BMI:</strong> <span>{{ "%.1f"|format(profile.bmi|float)
+                                }}</span></div>
+                        <div class="metric-item"><strong>BP Diastolic:</strong> <span>{{
+                                profile.blood_pressure_diastolic }}</span></div>
+                        <div class="metric-item"><strong>Blood Sugar Level:</strong> <span>{{ profile.blood_sugar_level
+                                }}</span></div>
+                        <div class="metric-item"><strong>Sleep Hours:</strong> <span>{{ profile.sleep_hours }}</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- --- PROFILE COMPLETION BAR (LOGIC FIXED) --- -->
+                <div class="mt-4 pt-3 border-top">
+                    {% set fields = ['age', 'gender', 'height_cm', 'weight_kg', 'chronic_disease',
+                    'blood_pressure_systolic', 'blood_pressure_diastolic', 'cholesterol_level', 'blood_sugar_level',
+                    'sleep_hours'] %}
+                    {% set completed_count = 0 %}
+                    {% for field in fields %}
+                        {# This now correctly checks if the field exists and is not an empty string #}
+                        {% if profile.get(field) is not none and profile.get(field)|string|trim != '' %}
+                            {% set completed_count = completed_count + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    {% set completion_percentage = (completed_count / fields|length * 100)|int %}
+
+                    {% set progress_color = 'bg-danger' %}
+                    {% if completion_percentage >= 90 %}
+                        {% set progress_color = 'bg-success' %}
+                    {% elif completion_percentage >= 50 %}
+                        {% set progress_color = 'bg-warning' %}
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0 text-secondary" style="font-size: 0.9rem;">Profile Completion</h6>
+                        <span class="progress-label">{{ completion_percentage }}%</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar {{ progress_color }}" role="progressbar"
+                            style="width: {{ completion_percentage }}%;" aria-valuenow="{{ completion_percentage }}"
+                            aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <!-- --- END FIX --- -->
+
             </div>
-            <div class="col-lg-5 d-flex align-items-center justify-content-center">
-                <div class="card p-3 text-center w-100" style="border: none;">
-                    <!-- NOTE: The ApexCharts script for this div needs to be included on this page for it to render. -->
-                    <div id="bmi_chart_div" style="width: 100%; height: 280px;"></div>
+        </div>
+
+        <!-- --- RIGHT CARD: QUICK ACTIONS & TIPS --- -->
+        <div class="col-lg-5">
+            <div class="info-card">
+                <h3>Quick Actions</h3>
+                <p class="text-muted">Update your profile or get a new meal plan.</p>
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#updateProfileModal"><i class="bi bi-person-fill"></i>
+                        Update Profile</button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
                 </div>
             </div>
-            </div>
 
-        <!-- MODIFIED: "Predict Meal Plan" button has been removed from here -->
-        <div class="d-flex gap-3 mt-4">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateProfileModal">
-                Update Profile
-            </button>     
-            <form action="{{url_for('dashboard')}}">
-            <button class="btn btn-primary">
-                Dashboard
-            </button> 
-            </form>      
         </div>
-        
+    </div>
 
-        {% else %}
+    {% else %}
+    <!-- New User Form -->
+    <div class="info-card">
         <h3 class="mb-3 text-primary text-start">Complete Your Profile</h3>
         <p class="text-muted">Please enter your details to get personalized diet recommendations.</p>
         <form method="POST" class="row g-3">
@@ -81,7 +212,6 @@
                     <option value="1">Yes</option>
                 </select>
             </div>
-            <!-- REMOVED 'required' from the inputs below -->
             <div class="col-md-6">
                 <label class="form-label">BP Systolic</label>
                 <input type="number" name="blood_pressure_systolic" class="form-control" placeholder="e.g., 120">
@@ -110,16 +240,16 @@
                 <button type="submit" class="btn btn-success btn-lg">Save Profile</button>
             </div>
         </form>
-        {% endif %}
     </div>
+    {% endif %}
 </div>
 
-<!-- Update Profile Modal -->
+<!-- Update Profile Modal (functionality unchanged) -->
 <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content p-4" style="border: none;">
             <div class="modal-header border-0">
-                <h5 class="modal-title text-primary text-start" id="updateProfileLabel">Update Profile</h5>
+                <h5 class="modal-title text-success text-start" id="updateProfileLabel">Update Profile</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -137,13 +267,11 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Height (cm)</label>
-                        <input type="number" name="height_cm" class="form-control"
-                            value="{{ profile.height_cm }}">
+                        <input type="number" name="height_cm" class="form-control" value="{{ profile.height_cm }}">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Weight (kg)</label>
-                        <input type="number" name="weight_kg" class="form-control"
-                            value="{{ profile.weight_kg }}">
+                        <input type="number" name="weight_kg" class="form-control" value="{{ profile.weight_kg }}">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Chronic Disease</label>
@@ -188,30 +316,6 @@
         </div>
     </div>
 </div>
-
-<!-- This script is needed to render the BMI gauge on this page -->
-{% if profile and profile.bmi %}
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-<script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function () {
-        const bmiValue = parseFloat("{{ profile.bmi }}");
-        function getBmiDetails(bmi) {
-            if (bmi < 18.5) return { status: "Underweight", color: "#26a69a" };
-            if (bmi < 24.9) return { status: "Normal", color: "#81d4fa" };
-            if (bmi < 29.9) return { status: "Overweight", color: "#03a9f4" };
-            return { status: "Obesity", color: "#ef5350" };
-        }
-        const bmiDetails = getBmiDetails(bmiValue);
-        var options = {
-            series: [bmiValue], chart: { type: 'radialBar', offsetY: -20, sparkline: { enabled: true } },
-            plotOptions: { radialBar: { startAngle: -120, endAngle: 120, min: 10, max: 45, track: { background: '#e0e0e0', strokeWidth: '97%', margin: 5, }, dataLabels: { name: { show: true, offsetY: 60, fontSize: '22px', color: bmiDetails.color, formatter: (val) => bmiDetails.status }, value: { offsetY: 10, fontSize: '36px', formatter: (val) => val.toFixed(1) } } } },
-            grid: { padding: { top: -10 } }, fill: { colors: [bmiDetails.color] }, labels: ['BMI'],
-        };
-        var chart = new ApexCharts(document.querySelector("#bmi_chart_div"), options);
-        chart.render();
-    });
-</script>
-{% endif %}
 
 {% endblock %}
 

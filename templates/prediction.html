@@ -2,9 +2,8 @@
 {% block content %}
 <div class="container mt-5">
     <div>
-        <h2 class="text-success text-center mb-4">Recommended Meal Plan</h2>
+        <h2 class="text-success text-center mb-4">Recommended Meal Plan: {{ meal }}</h2>
         <hr>
-        <!-- <h4 class="text-muted mb-1"><b>Diet name:</b><i> {{ meal }}</i></h4> -->
         <div class="alert alert-info text-start mt-3" style="border-radius:12px;">
             <i class="bi bi-lightbulb-fill text-success"> {{ description }}</i>
         </div>
@@ -15,9 +14,9 @@
             <div class="card-body text-start">
 
                 <div class="d-flex justify-content-between align-items-start">
-                    <h5 class="card-title">🍽️ Diet {{ loop.index }}</h5>
+                    <h5 class="card-title">🍽️ Diet Option {{ loop.index }}</h5>
 
-                    {% if loop.index in liked_plan_indices %}
+                    {% if user_liked_per_plan[loop.index0] %}
                     <!-- Already liked: green button (click to unlike) -->
                     <a href="{{ url_for('like_diet', diet_name=meal, plan_index=loop.index) }}"
                         class="btn btn-success rounded-circle" style="width:40px; height:40px;">
@@ -34,11 +33,12 @@
 
                 <span class="text-muted">{{ likes_per_plan[loop.index0] }} Likes</span>
                 <hr>
-                <p><strong>Breakfast:</strong> {{ plan.Breakfast }}</p>
-                <p><strong>Lunch:</strong> {{ plan.Lunch }}</p>
-                <p><strong>Dinner:</strong> {{ plan.Dinner }}</p>
-            </div>
 
+                <p><strong>Breakfast:</strong> {{ plan.breakfast }}</p>
+                <p><strong>Lunch:</strong> {{ plan.lunch }}</p>
+                <p><strong>Dinner:</strong> {{ plan.dinner }}</p>
+
+            </div>
         </div>
         {% endfor %}
         {% else %}
