@@ -10,15 +10,14 @@
         margin: auto;
     }
 
-    /* Use standard Bootstrap font, no custom font-family needed */
-
     /* General Card Styling */
     .info-card {
         background-color: #fff;
-        border-radius: 9px;
+        border-radius: 12px; /* Smoother corners */
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
         padding: 30px;
         margin-bottom: 25px;
+        border: none; /* Remove default border */
     }
 
     .info-card h3 {
@@ -31,7 +30,7 @@
     }
     
     /* Main Welcome Header */
-    .welcome-header h2 { /* MODIFIED: Changed from h1 to h2 to match HTML */
+    .welcome-header h2 {
         font-weight: 600;
         color: #212529;
     }
@@ -56,23 +55,6 @@
         font-weight: 500;
     }
 
-    /* Health Tips Card */
-    .tip-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 15px;
-        margin-bottom: 15px;
-        color: #495057;
-    }
-    .tip-icon {
-        font-size: 1.5rem;
-        color: #198754;
-        margin-top: 3px;
-    }
-    .tip-item p {
-        margin-bottom: 0;
-    }
-
     /* Profile Completion Bar styles */
     .progress-bar {
         height: 12px;
@@ -92,7 +74,8 @@
     {% if profile and profile.age %}
 
     <div class="welcome-header mb-4">
-        <h2>Your Profile</h2>
+        <!-- MODIFIED: Single clear heading for the page -->
+        <h2>Health Profile</h2>
         <p>Here’s a summary of your current health status and details.</p>
     </div>
 
@@ -100,7 +83,7 @@
         <!-- --- LEFT CARD: PERSONAL & HEALTH DETAILS --- -->
         <div class="col-lg-7">
             <div class="info-card">
-                <h3>Your Details</h3>
+                <!-- MODIFIED: Removed redundant "Your Details" heading -->
                 <div class="row">
                     <div class="col-md-6">
                         <div class="metric-item"><strong>Age:</strong> <span>{{ profile.age }}</span></div>
@@ -134,13 +117,16 @@
                     {% set fields = ['age', 'gender', 'height_cm', 'weight_kg', 'chronic_disease',
                     'blood_pressure_systolic', 'blood_pressure_diastolic', 'cholesterol_level', 'blood_sugar_level',
                     'sleep_hours'] %}
-                    {% set completed_count = 0 %}
+                    
+                    {# FIX: Use a namespace/dict to work around Jinja2 loop scoping issues #}
+                    {% set count = {'value': 0} %}
                     {% for field in fields %}
-                        {# This now correctly checks if the field exists and is not an empty string #}
                         {% if profile.get(field) is not none and profile.get(field)|string|trim != '' %}
-                            {% set completed_count = completed_count + 1 %}
+                            {% if count.update({'value': count.value + 1}) %}{% endif %}
                         {% endif %}
                     {% endfor %}
+                    {% set completed_count = count.value %}
+                    
                     {% set completion_percentage = (completed_count / fields|length * 100)|int %}
 
                     {% set progress_color = 'bg-danger' %}
@@ -165,13 +151,13 @@
             </div>
         </div>
 
-        <!-- --- RIGHT CARD: QUICK ACTIONS & TIPS --- -->
+        <!-- --- RIGHT CARD: QUICK ACTIONS (Button colors updated) --- -->
         <div class="col-lg-5">
             <div class="info-card">
                 <h3>Quick Actions</h3>
-                <p class="text-muted">Update your profile or get a new meal plan.</p>
+                <p class="text-muted">Need to make changes or head back to your main dashboard?</p>
                 <div class="d-flex flex-wrap gap-2 mt-3">
-                    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#updateProfileModal"><i class="bi bi-person-fill"></i>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateProfileModal"><i class="bi bi-pencil-fill"></i>
                         Update Profile</button>
                     <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
                 </div>
@@ -185,7 +171,7 @@
     <div class="info-card">
         <h3 class="mb-3 text-primary text-start">Complete Your Profile</h3>
         <p class="text-muted">Please enter your details to get personalized diet recommendations.</p>
-        <form method="POST" class="row g-3">
+        <form method="POST" class="row g-3" id="initial-profile-form">
             <div class="col-md-6">
                 <label class="form-label">Age</label>
                 <input type="number" name="age" class="form-control" required>
@@ -208,33 +194,29 @@
             <div class="col-md-6">
                 <label class="form-label">Chronic Disease</label>
                 <select name="chronic_disease" class="form-select">
-                    <option value="0">No</option>
+                    <option value="0" selected>No</option>
                     <option value="1">Yes</option>
                 </select>
             </div>
             <div class="col-md-6">
                 <label class="form-label">BP Systolic</label>
-                <input type="number" name="blood_pressure_systolic" class="form-control" placeholder="e.g., 120">
+                <input type="number" name="blood_pressure_systolic" class="form-control" placeholder="Optional, e.g., 120">
             </div>
             <div class="col-md-6">
                 <label class="form-label">BP Diastolic</label>
-                <input type="number" name="blood_pressure_diastolic" class="form-control" placeholder="e.g., 80">
+                <input type="number" name="blood_pressure_diastolic" class="form-control" placeholder="Optional, e.g., 80">
             </div>
             <div class="col-md-6">
                 <label class="form-label">Cholesterol (mg/dL)</label>
-                <input type="number" name="cholesterol_level" class="form-control" placeholder="e.g., 200">
+                <input type="number" name="cholesterol_level" class="form-control" placeholder="Optional, e.g., 200">
             </div>
             <div class="col-md-6">
                 <label class="form-label">Blood Sugar (mg/dL)</label>
-                <input type="number" name="blood_sugar_level" class="form-control" placeholder="e.g., 100">
+                <input type="number" name="blood_sugar_level" class="form-control" placeholder="Optional, e.g., 100">
             </div>
             <div class="col-md-6">
                 <label class="form-label">Sleep Hours</label>
-                <select name="sleep_hours" class="form-select">
-                    <option value="7">Good</option>
-                    <option value="5">Poor</option>
-                    <option value="9">Excessive</option>
-                </select>
+                <input type="number" name="sleep_hours" class="form-control" placeholder="Optional, e.g., 7">
             </div>
             <div class="col-12 d-grid">
                 <button type="submit" class="btn btn-success btn-lg">Save Profile</button>
@@ -253,7 +235,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" class="row g-3">
+                <form method="POST" class="row g-3" id="update-profile-form">
                     <div class="col-md-6">
                         <label class="form-label">Age</label>
                         <input type="number" name="age" class="form-control" value="{{ profile.age }}" required>
@@ -283,30 +265,26 @@
                     <div class="col-md-6">
                         <label class="form-label">BP Systolic</label>
                         <input type="number" name="blood_pressure_systolic" class="form-control"
-                            value="{{ profile.blood_pressure_systolic }}" placeholder="e.g., 120">
+                            value="{{ profile.blood_pressure_systolic }}" placeholder="Optional, e.g., 120">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">BP Diastolic</label>
                         <input type="number" name="blood_pressure_diastolic" class="form-control"
-                            value="{{ profile.blood_pressure_diastolic }}" placeholder="e.g., 80">
+                            value="{{ profile.blood_pressure_diastolic }}" placeholder="Optional, e.g., 80">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Cholesterol (mg/dL)</label>
                         <input type="number" name="cholesterol_level" class="form-control"
-                            value="{{ profile.cholesterol_level }}" placeholder="e.g., 200">
+                            value="{{ profile.cholesterol_level }}" placeholder="Optional, e.g., 200">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Blood Sugar (mg/dL)</label>
                         <input type="number" name="blood_sugar_level" class="form-control"
-                            value="{{ profile.blood_sugar_level }}" placeholder="e.g., 100">
+                            value="{{ profile.blood_sugar_level }}" placeholder="Optional, e.g., 100">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Sleep Hours</label>
-                        <select name="sleep_hours" class="form-select">
-                            <option value="7" {% if profile.sleep_hours=="7" or not profile.sleep_hours %}selected{% endif %}>Good</option>
-                            <option value="5" {% if profile.sleep_hours=="5" %}selected{% endif %}>Poor</option>
-                            <option value="9" {% if profile.sleep_hours=="9" %}selected{% endif %}>Excessive</option>
-                        </select>
+                        <input type="number" name="sleep_hours" class="form-control" value="{{ profile.sleep_hours }}" placeholder="Optional, e.g., 7">
                     </div>
                     <div class="col-12 d-grid">
                         <button type="submit" class="btn btn-success btn-lg">Save Changes</button>
@@ -316,6 +294,68 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="warningModal" tabindex="-1" aria-labelledby="warningModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-warning" id="warningModalLabel"><i class="bi bi-exclamation-triangle-fill"></i> Incomplete Profile</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        You have left some optional health fields blank. For the most accurate predictions, we recommend filling out all details.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Go Back & Edit</button>
+        <button type="button" class="btn btn-primary" id="confirm-continue-btn">Continue Anyway</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    let formToSubmit = null;
+    const warningModal = new bootstrap.Modal(document.getElementById('warningModal'));
+    const confirmContinueBtn = document.getElementById('confirm-continue-btn');
+
+    function checkOptionalFields(form) {
+        const optionalFields = ['blood_pressure_systolic', 'blood_pressure_diastolic', 'cholesterol_level', 'blood_sugar_level', 'sleep_hours'];
+        let hasEmptyFields = false;
+        optionalFields.forEach(fieldName => {
+            const field = form.querySelector(`[name="${fieldName}"]`);
+            if (field && field.value.trim() === '') {
+                hasEmptyFields = true;
+            }
+        });
+        return hasEmptyFields;
+    }
+
+    function formSubmitHandler(event) {
+        if (checkOptionalFields(event.target)) {
+            event.preventDefault(); 
+            formToSubmit = event.target; 
+            warningModal.show(); 
+        }
+    }
+
+    const updateForm = document.getElementById('update-profile-form');
+    if (updateForm) {
+        updateForm.addEventListener('submit', formSubmitHandler);
+    }
+
+    const initialForm = document.getElementById('initial-profile-form');
+    if (initialForm) {
+        initialForm.addEventListener('submit', formSubmitHandler);
+    }
+    
+    confirmContinueBtn.addEventListener('click', function() {
+        if (formToSubmit) {
+            formToSubmit.submit();
+        }
+    });
+});
+</script>
 
 {% endblock %}
 
