@@ -13,7 +13,6 @@ from datetime import datetime
 import json
 import re 
 from itsdangerous import URLSafeTimedSerializer
-# --- NEW: Import Flask-Mail ---
 from flask_mail import Mail, Message
 
 load_dotenv()
@@ -22,7 +21,6 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/ProjectHelio")
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey")
 
-# --- NEW: Configure Flask-Mail ---
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
 app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
 app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True').lower() in ['true', 'on', '1']
@@ -30,20 +28,17 @@ app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 
-mail = Mail(app) # Initialize Flask-Mail
+mail = Mail(app) 
 
 mongo = PyMongo(app)
 
 s = URLSafeTimedSerializer(app.secret_key)
 
-# --- CORRECT: Models are loaded correctly here ---
 model = tf.keras.models.load_model("model/diet_model.keras")
 scaler = joblib.load("model/scaler.pkl")
 meal_encoder = joblib.load("model/meal_encoder.pkl")
-# --- END CORRECT ---
 
 
-# --- Load Diet, Workout, and Health Tip Data ---
 def load_diet_plans():
     try:
         with open('data/diet_plans.json', 'r') as f:
@@ -207,21 +202,14 @@ def dashboard():
 @login_required
 def profile():
     if request.method == "POST":
-        age = request.form.get("age")
-        gender = request.form.get("gender")
-        height_cm = request.form.get("height_cm")
-        weight_kg = request.form.get("weight_kg")
-        bmi = None
-        if height_cm and weight_kg:
-            try:
-                height_m = float(height_cm) / 100
-                weight = float(weight_kg)
-                bmi = round(weight / (height_m ** 2), 1)
-            except (ValueError, ZeroDivisionError):
-                bmi = None
+        # --- START OF MODIFICATION: Save dietary preference ---
         data = {
-            "user_id": current_user.id, "age": age, "gender": gender,
-            "height_cm": height_cm, "weight_kg": weight_kg, "bmi": bmi,
+            "user_id": current_user.id,
+            "age": request.form.get("age"),
+            "gender": request.form.get("gender"),
+            "height_cm": request.form.get("height_cm"),
+            "weight_kg": request.form.get("weight_kg"),
+            "dietary_preference": request.form.get("dietary_preference"), # New field
             "chronic_disease": request.form.get("chronic_disease"),
             "blood_pressure_systolic": request.form.get("blood_pressure_systolic"),
             "blood_pressure_diastolic": request.form.get("blood_pressure_diastolic"),
@@ -229,21 +217,33 @@ def profile():
             "blood_sugar_level": request.form.get("blood_sugar_level"),
             "sleep_hours": request.form.get("sleep_hours"),
         }
+        
+        bmi = None
+        if data["height_cm"] and data["weight_kg"]:
+            try:
+                height_m = float(data["height_cm"]) / 100
+                weight = float(data["weight_kg"])
+                bmi = round(weight / (height_m ** 2), 1)
+            except (ValueError, ZeroDivisionError):
+                bmi = None
+        data["bmi"] = bmi
+
         mongo.db.profiles.update_one({"user_id": current_user.id}, {"$set": data}, upsert=True)
         flash("Profile updated successfully!", "success")
         return redirect(url_for("profile"))
+        # --- END OF MODIFICATION ---
+        
     profile = mongo.db.profiles.find_one({"user_id": current_user.id})
     return render_template("profile.html", profile=profile)
 
-
-# --- REMOVED: Duplicate and incorrect model loading lines were here ---
 
 @app.route("/get-prediction")
 @login_required
 def get_prediction():
     profile = mongo.db.profiles.find_one({"user_id": current_user.id}) or {}
-    if not all(k in profile for k in ["age", "gender", "height_cm", "weight_kg"]) or not profile["age"]:
-        return jsonify({"success": False, "message": "Please complete your profile first! Age, gender, height, and weight are required."})
+    if not all(k in profile for k in ["age", "gender", "height_cm", "weight_kg"]):
+        return jsonify({"success": False, "message": "Please complete your profile first!"})
+
     try:
         features = [
             float(profile.get("age")), float(profile.get("gender")), float(profile.get("height_cm")), float(profile.get("weight_kg")),
@@ -253,7 +253,7 @@ def get_prediction():
             float(profile.get("sleep_hours") or 7),
         ]
     except (ValueError, TypeError):
-        return jsonify({"success": False, "message": "Insufficient data in profile. Please check your details."})
+        return jsonify({"success": False, "message": "Insufficient data in profile."})
 
     features_scaled = scaler.transform([features])
     prediction = model.predict(features_scaled)
@@ -262,14 +262,25 @@ def get_prediction():
     meal_plan_name = meal_plan_map.get(meal_idx)
 
     if not meal_plan_name or meal_plan_name not in DIET_PLANS_DATA:
-        return jsonify({"success": False, "message": "Could not find a matching diet plan for the prediction."})
+        return jsonify({"success": False, "message": "Could not find a matching diet plan."})
     
     predicted_diet_data = DIET_PLANS_DATA[meal_plan_name]
     all_recommendations = predicted_diet_data.get("meal_options", [])
     
+    # --- START OF MODIFICATION: Filter based on preference ---
+    preference = profile.get("dietary_preference", "both")
+    
+    if preference == 'veg':
+        filtered_options = all_recommendations[:3]
+    elif preference == 'non-veg':
+        filtered_options = all_recommendations[3:]
+    else: # 'both'
+        filtered_options = all_recommendations
+
     single_recommendation = None
-    if all_recommendations:
-        single_recommendation = random.choice(all_recommendations)
+    if filtered_options:
+        single_recommendation = random.choice(filtered_options)
+    # --- END OF MODIFICATION ---
 
     return jsonify({ "success": True, "meal_plan": meal_plan_name, "recommendation": single_recommendation })
 
@@ -288,11 +299,24 @@ def get_swap():
     if not diet_data:
         return jsonify({"success": False, "message": "Invalid diet name."}), 404
 
-    meal_options = diet_data.get("meal_options", [])
+    # --- START OF MODIFICATION: Filter swaps based on preference ---
+    profile = mongo.db.profiles.find_one({"user_id": current_user.id}) or {}
+    preference = profile.get("dietary_preference", "both")
+    
+    all_meal_options = diet_data.get("meal_options", [])
+    
+    if preference == 'veg':
+        filtered_options = all_meal_options[:3]
+    elif preference == 'non-veg':
+        filtered_options = all_meal_options[3:]
+    else: # 'both'
+        filtered_options = all_meal_options
+
     possible_swaps = [
-        option[meal_type] for option in meal_options 
+        option[meal_type] for option in filtered_options 
         if meal_type in option and option[meal_type] != current_meal
     ]
+    # --- END OF MODIFICATION ---
 
     if not possible_swaps:
         return jsonify({"success": True, "new_meal": current_meal})
@@ -382,7 +406,6 @@ def delete_workout(workout_id):
 @app.route("/get-daily-tip")
 @login_required
 def get_daily_tip():
-    """API endpoint to get a random health tip."""
     if not HEALTH_TIPS_DATA:
         return jsonify({"success": False, "message": "Health tips are currently unavailable."})
     

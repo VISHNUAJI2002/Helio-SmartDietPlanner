@@ -74,7 +74,6 @@
     {% if profile and profile.age %}
 
     <div class="welcome-header mb-4">
-        <!-- MODIFIED: Single clear heading for the page -->
         <h2>Health Profile</h2>
         <p>Here’s a summary of your current health status and details.</p>
     </div>
@@ -83,32 +82,35 @@
         <!-- --- LEFT CARD: PERSONAL & HEALTH DETAILS --- -->
         <div class="col-lg-7">
             <div class="info-card">
-                <!-- MODIFIED: Removed redundant "Your Details" heading -->
+                <h3>Your Information</h3>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="metric-item"><strong>Age:</strong> <span>{{ profile.age }}</span></div>
+                        <div class="metric-item"><strong>Gender:</strong> <span>{% if profile.gender == "0" %}Male{%
+                                else %}Female{% endif %}</span></div>                        
                         <div class="metric-item"><strong>Height (cm):</strong> <span>{{ profile.height_cm }}</span>
                         </div>
-                        <div class="metric-item"><strong>Chronic Disease:</strong> <span>{% if profile.chronic_disease
-                                == "1" %}Yes{% else %}No{% endif %}</span></div>
-                        <div class="metric-item"><strong>BP Systolic:</strong> <span>{{ profile.blood_pressure_systolic
-                                }}</span></div>
-                        <div class="metric-item"><strong>Cholesterol Level:</strong> <span>{{ profile.cholesterol_level
-                                }}</span></div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="metric-item"><strong>Gender:</strong> <span>{% if profile.gender == "0" %}Male{%
-                                else %}Female{% endif %}</span></div>
                         <div class="metric-item"><strong>Weight (kg):</strong> <span>{{ profile.weight_kg }}</span>
                         </div>
                         <div class="metric-item"><strong>BMI:</strong> <span>{{ "%.1f"|format(profile.bmi|float)
-                                }}</span></div>
+                                }}</span></div>   
+                        <div class="metric-item"><strong>Chronic Disease:</strong> <span>{% if profile.chronic_disease
+                                == "1" %}Yes{% else %}No{% endif %}</span></div>                                                     
+
+                    </div>
+                    <div class="col-md-6">
+                        <div class="metric-item"><strong>BP Systolic:</strong> <span>{{ profile.blood_pressure_systolic
+                                }}</span></div>                        
                         <div class="metric-item"><strong>BP Diastolic:</strong> <span>{{
                                 profile.blood_pressure_diastolic }}</span></div>
+                        <div class="metric-item"><strong>Cholesterol Level:</strong> <span>{{ profile.cholesterol_level
+                                }}</span></div>                                
                         <div class="metric-item"><strong>Blood Sugar Level:</strong> <span>{{ profile.blood_sugar_level
                                 }}</span></div>
                         <div class="metric-item"><strong>Sleep Hours:</strong> <span>{{ profile.sleep_hours }}</span>
-                        </div>
+                        </div>                                
+                        <div class="metric-item"><strong>Dietary Preference:</strong> <span>{% if profile.dietary_preference == 'veg' %}Vegetarian
+                            {% elif profile.dietary_preference == 'non-veg' %}Non-Vegetarian{% else %}Both are fine{% endif %}</span></div>        
                     </div>
                 </div>
 
@@ -118,7 +120,6 @@
                     'blood_pressure_systolic', 'blood_pressure_diastolic', 'cholesterol_level', 'blood_sugar_level',
                     'sleep_hours'] %}
                     
-                    {# FIX: Use a namespace/dict to work around Jinja2 loop scoping issues #}
                     {% set count = {'value': 0} %}
                     {% for field in fields %}
                         {% if profile.get(field) is not none and profile.get(field)|string|trim != '' %}
@@ -151,7 +152,7 @@
             </div>
         </div>
 
-        <!-- --- RIGHT CARD: QUICK ACTIONS (Button colors updated) --- -->
+        <!-- --- RIGHT CARD: QUICK ACTIONS --- -->
         <div class="col-lg-5">
             <div class="info-card">
                 <h3>Quick Actions</h3>
@@ -159,10 +160,9 @@
                 <div class="d-flex flex-wrap gap-2 mt-3">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateProfileModal"><i class="bi bi-pencil-fill"></i>
                         Update Profile</button>
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Dashboard</a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-success"> <i class="bi bi-speedometer2"></i> Dashboard</a>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -191,6 +191,16 @@
                 <label class="form-label">Weight (kg)</label>
                 <input type="number" name="weight_kg" class="form-control" required>
             </div>
+            <!-- START OF NEW CODE: Dietary Preference for New User -->
+            <div class="col-md-6">
+                <label class="form-label">Dietary Preference</label>
+                <select name="dietary_preference" class="form-select">
+                    <option value="veg">Vegetarian</option>
+                    <option value="non-veg">Non-Vegetarian</option>
+                    <option value="both" selected>Any</option>
+                </select>
+            </div>
+            <!-- END OF NEW CODE -->
             <div class="col-md-6">
                 <label class="form-label">Chronic Disease</label>
                 <select name="chronic_disease" class="form-select">
@@ -226,7 +236,7 @@
     {% endif %}
 </div>
 
-<!-- Update Profile Modal (functionality unchanged) -->
+<!-- Update Profile Modal -->
 <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content p-4" style="border: none;">
@@ -255,6 +265,16 @@
                         <label class="form-label">Weight (kg)</label>
                         <input type="number" name="weight_kg" class="form-control" value="{{ profile.weight_kg }}">
                     </div>
+                     <!-- START OF NEW CODE: Dietary Preference for Update Modal -->
+                    <div class="col-md-6">
+                        <label class="form-label">Dietary Preference</label>
+                        <select name="dietary_preference" class="form-select">
+                            <option value="veg" {% if profile.dietary_preference == 'veg' %}selected{% endif %}>Vegetarian</option>
+                            <option value="non-veg" {% if profile.dietary_preference == 'non-veg' %}selected{% endif %}>Non-Vegetarian</option>
+                            <option value="both" {% if profile.dietary_preference == 'both' or not profile.dietary_preference %}selected{% endif %}>Any</option>
+                        </select>
+                    </div>
+                    <!-- END OF NEW CODE -->
                     <div class="col-md-6">
                         <label class="form-label">Chronic Disease</label>
                         <select name="chronic_disease" class="form-select">
