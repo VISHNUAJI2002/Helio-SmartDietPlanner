@@ -6,24 +6,34 @@
             "source": "ICMR-NIN, 2020; Eat Right India (FSSAI)",
             "meal_options": [
                 {
-                    "breakfast": "Idli with sambar and coconut chutney",
-                    "lunch": "Steamed rice with sambar and vegetable poriyal (beans/cabbage/carrot)",
-                    "dinner": "Chapathi with dal or mixed vegetable curry"
+                    "breakfast": "Idli + Sambar + Coconut chutney",
+                    "lunch": "Rice + Potato Curry + Beetroot thoran + Curd",
+                    "dinner": "Chapati + Channa masala + Onion chutney"
                 },
                 {
-                    "breakfast": "Puttu with Kadala (black chickpea) curry",
-                    "lunch": "Kerala Matta rice with avial, thoran, and a non-fried fish curry",
-                    "dinner": "Wheat dosa with tomato chutney and a small bowl of sambar"
+                    "breakfast": "Idiyappam + Vegetable stew + Green gram sprouts",
+                    "lunch": "Brown rice + Sambar + Pumpkin thoran + Potato mezhukkupuratti + Rasam",
+                    "dinner": "Beetroot dosa + Coconut chutney + Buttermilk"
                 },
                 {
-                    "breakfast": "Appam with vegetable stew",
-                    "lunch": "Chapathi with mixed vegetable korma and a side salad",
-                    "dinner": "Roti with paneer butter masala (low oil) and green salad"
+                    "breakfast": "Ragi dosa + Tomato chutney + Dal curry",
+                    "lunch": "Rice + Ladies finger curry + Carrot thoran + Buttermilk",
+                    "dinner": "Wheat upma + Green gram curry + Vegetable salad"
                 },
                 {
-                    "breakfast": "Banana or glass of milk",
-                    "lunch": "Rasam and curd with papaya",
-                    "dinner": "Salad (tomato, cucumber, onion) and buttermilk"
+                    "breakfast": "Millet dosa + Coriander Chutney + Apple slices",
+                    "lunch": "Rice + Fish curry + Beans thoran + Drumstick leaves curry + Curd",
+                    "dinner": "Chapati + Egg Curry + Cucumber Slices"
+                },
+                {
+                    "breakfast": "Ragi puttu with Bengal gram curry (Kadala) + Boiled egg",
+                    "lunch": "Rice + Chicken curry + Beetroot thoran + Chena mezhukkupuratti + Buttermilk",
+                    "dinner": "Rice kanji + Cowpea thoran (Vanpayar)"
+                },
+                {
+                    "breakfast": "Rava upma + Green peas curry + Boiled egg",
+                    "lunch": "Rice + Egg omlette + Coconut chutney + Potato mezhukkupuratti + Curd",
+                    "dinner": "Dosa + Tomato Chutney + Grilled chicken"
                 }
             ]
         },
@@ -33,24 +43,34 @@
             "source": "NIN Recommended Dietary Allowances; Nutrition Foundation of India",
             "meal_options": [
                 {
-                    "breakfast": "Moong dal chilla (pesarattu) with chutney",
-                    "lunch": "Brown rice with dal tadka and spinach poriyal",
-                    "dinner": "Chapathi with sprouted moong salad or egg curry"
+                    "breakfast": "Puttu + Kadala curry + boiled banana ",
+                    "lunch": "Rice + dal curry + soya roast + Spinach thoran + buttermilk",
+                    "dinner": "chapati + green gram curry (cherupayar) + vegetable salad"
                 },
                 {
-                    "breakfast": "Boiled eggs or paneer cubes",
-                    "lunch": "Quinoa with grilled paneer tikka and a large bowl of mixed dal",
-                    "dinner": "Pan-seared fish with a side of steamed broccoli and green beans"
+                    "breakfast": "Appam + Vegetable stew + Almond milk",
+                    "lunch": "Rice + Aviyal + bengal gram curry (Kadala) + curd",
+                    "dinner": "Brown rice Kanji + cowpea thoran (Vanpayar) + carrot mezhukkupuratti"
                 },
                 {
-                    "breakfast": "Sprouts salad with chopped onions and tomatoes",
-                    "lunch": "Grilled chicken or fish and curd",
-                    "dinner": "Tofu stir-fry with bell peppers and onions"
+                    "breakfast": "Idli + Sambar + Chutney + Soaked Almonds",
+                    "lunch": "Soya rice + Raita (curd and vegetable salad) + drumstick leaves thoran",
+                    "dinner": "Chapati + Paneer curry + Cucumber Slices"
                 },
                 {
-                    "breakfast": "Egg bhurji (scrambled eggs) with sautéed spinach",
-                    "lunch": "Soya chunk curry with a small portion of millet rice",
-                    "dinner": "A small bowl of curd"
+                    "breakfast": "Idiyappam + Egg curry + Milk",
+                    "lunch": "Brown rice + chicken curry + beetroot thoran + moru curry",
+                    "dinner": "Chapati + vegetable kuruma + Vegetable salad"
+                },
+                {
+                    "breakfast": "Ragi dosa + Coconut chutney + Boiled egg",
+                    "lunch": "Rice + Fish fry + Cabbage thoran + Drumstick leaves curry + buttermilk",
+                    "dinner": "Chapati + Egg curry + Vegetable Salad"
+                },
+                {
+                    "breakfast": "Vegetable Upma + Bengal gram Curry (Kadala) + Almonds",
+                    "lunch": "Basmati rice + Chicken curry + Kovakka mezhukkupuratti + rasam",
+                    "dinner": "Vegetable stuffed chapati+ Scrambled egg + beetroot salad"
                 }
             ]
         },
@@ -60,24 +80,34 @@
             "source": "National Health Portal India; ICMR-NIN recommendations on metabolic diets",
             "meal_options": [
                 {
-                    "breakfast": "Ragi dosa or egg omelet with vegetables",
-                    "lunch": "Cauliflower rice with grilled fish or paneer curry",
-                    "dinner": "Vegetable soup and stir-fried beans with spinach"
+                    "breakfast": "Wheat puttu + Bengal gram curry (Kadala) + Boiled vegetables",
+                    "lunch": "Mushroom rice + Spinach-dal curry + Salad",
+                    "dinner": "Veg pulao + Soya chunks curry + Cucumber slices"
                 },
                 {
-                    "breakfast": "Scrambled paneer with bell peppers and onions",
-                    "lunch": "A large salad with grilled chicken/tofu and a lemon-herb dressing",
-                    "dinner": "Steamed fish with lemon and herbs, served with asparagus"
+                    "breakfast": "Chapati + Green peas curry + Watermelon slices",
+                    "lunch": "Rice + Ladies finger mezhukkupuratti + Rasam +Curd",
+                    "dinner": "Dosa + Green gram curry + Vegetable soup"
                 },
                 {
-                    "breakfast": "Almond milk smoothie with spinach and a few berries",
-                    "lunch": "Chicken or vegetable clear soup with a side of sautéed mushrooms",
-                    "dinner": "Cabbage thoran cooked with coconut and spices"
+                    "breakfast": " Ragi dosa + Tomato chutney + Almond milk",
+                    "lunch": "Cauliflower rice + Carrot mezhukkupuratti + Buttermilk",
+                    "dinner": "Broken wheat Upma + Dal curry + Green gram sprouts"
                 },
                 {
-                    "breakfast": "Coconut water",
-                    "lunch": "Cucumber salad",
-                    "dinner": "Grilled tofu or chicken"
+                    "breakfast": "Dosa + Tomato chutney + Boiled egg",
+                    "lunch": "Rice + fish curry + Cabbage thoran + Rasam",
+                    "dinner": "Chapati + Cauliflower curry + Cucumber slices"
+                },
+                {
+                    "breakfast": "Oats with skim milk + Avocado slices",
+                    "lunch": "Brown rice + Snake gourd curry + fish curry + Ladie's finger mezhukkupuratti",
+                    "dinner": "Egg dosa + Sambar + Tomato chutney"
+                },
+                {
+                    "breakfast": "Wheat bread + Vegetable egg omlette",
+                    "lunch": "Brown rice + moru curry + beans carrot thoran + Chicken curry",
+                    "dinner": "Wheat dosa + Asparagus curry + Boiled egg white (1)"
                 }
             ]
         },
@@ -87,24 +117,34 @@
             "source": "ICMR-NIN, 2020; Eat Right India (FSSAI)",
             "meal_options": [
                 {
-                    "breakfast": "Idli with tomato chutney (no coconut)",
-                    "lunch": "Steamed rice with sambar (low oil) and boiled vegetable curry",
-                    "dinner": "Oil-free chapathi with bottle gourd curry"
+                    "breakfast": "Idli + Tomato chutney + Skim milk",
+                    "lunch": "Brown rice + Sambar + Rasam + Soya roast",
+                    "dinner": "Vegetable oats + Spinach curry + boiled white channa"
                 },
                 {
-                    "breakfast": "Steamed Rava Idli with a thin sambar",
-                    "lunch": "Puttu with green gram curry (cherupayar curry)",
-                    "dinner": "Appam with vegetable stew (using minimal coconut milk)"
+                    "breakfast": "Oats porridge with skimmed milk + Boiled banana (small)",
+                    "lunch": "Brown rice + carrot thoran + Aviyal + buttermilk",
+                    "dinner": "Chapati + green peas curry + Sauted spinach"
                 },
                 {
-                    "breakfast": "Fruit salad (papaya, apple, orange)",
-                    "lunch": "A large bowl of vegetable clear soup with boiled chicken pieces",
-                    "dinner": "Baked fish with herbs and lemon"
+                    "breakfast": "Ragi puttu + green gram curry (cherupayar) + papaya slices",
+                    "lunch": "Mint rice + Buttermilk + Paneer curry",
+                    "dinner": "Millet dosa + Vegetable curry + Tomato chutney"
                 },
                 {
-                    "breakfast": "Toned milk",
-                    "lunch": "Rasam and curd",
-                    "dinner": "Vegetable salad and buttermilk"
+                    "breakfast": "Wheat Upma + boiled banana (small) + Boiled egg white (2)",
+                    "lunch": "Brown rice + moru curry + Spinach thoran + fish fry (less oil)",
+                    "dinner": "Chapati + green peas curry + Cucumber Slices"
+                },
+                {
+                    "breakfast": "Idiyappam + Vegetable curry + Boiled egg white (2)",
+                    "lunch": "Chicken rice + Vegetable salad",
+                    "dinner": "Oats porridge + Sauted soya + Green gram sprouts"
+                },
+                {
+                    "breakfast": "Idli + Sambar + Coriander chutney + skim milk",
+                    "lunch": "Vegetable Biriyani + Chicken curry + Curd + Cucumber slices",
+                    "dinner": "Vegetable Kanji + Cowpea thoran (Vanpayar)"
                 }
             ]
         },
@@ -114,24 +154,34 @@
             "source": "NIN & WHO India collaborative dietary model; FSSAI Eat Right India 2023",
             "meal_options": [
                 {
-                    "breakfast": "Ragi upma cooked in olive oil with vegetables",
-                    "lunch": "Brown rice or millet with grilled fish/paneer and salad with olive oil dressing",
-                    "dinner": "Whole wheat chapathi with channa masala and sautéed vegetables"
+                    "breakfast": "Whole grain oats + Honey + Apple Slices",
+                    "lunch": "- Red rice + Beetroot thoran (Olive oil) + Green gram saute + Curd",
+                    "dinner": "Millet chapati + Sauted Vegetables (Carrot, Beans) + Jeera water"
                 },
                 {
-                    "breakfast": "Oats upma with nuts and seeds",
-                    "lunch": "Millet biryani with vegetables and a side of cucumber raita",
-                    "dinner": "Grilled prawns or paneer skewers with a side of sautéed greens"
+                    "breakfast": "Vegetable semolina upma + Mint chutney+ dates",
+                    "lunch": "Brown rice + Cow pea curry (Vanpayar) + Carrot mezhukkupuratti (olive oil) + Cucumber salad",
+                    "dinner": "Broken wheat upma + White channa roast + Yoghurt"
                 },
                 {
-                    "breakfast": "Fruit salad with a dollop of Greek yogurt (curd)",
-                    "lunch": "Lentil soup with a side of whole-wheat bread and hummus",
-                    "dinner": "A large bowl of lentil and vegetable soup (dalma)"
+                    "breakfast": "Ragi puttu + Bengal gram curry (Kadala) + Walnuts",
+                    "lunch": "Vegetable Biriyani + Raita ( Vegetable and curd Salad) + Paneer curry",
+                    "dinner": "Brown rice + kovakka thoran + rasam"
                 },
                 {
-                    "breakfast": "Handful of almonds or walnuts",
-                    "lunch": "Curd with flaxseed",
-                    "dinner": "Fruit bowl (pomegranate, apple)"
+                    "breakfast": "Idli + Sambar + Coriander Chutney + Papaya slices",
+                    "lunch": "Rice + Grilled fish (Sardine) + Broccoli thoran + Cucumber- Tomato salad",
+                    "dinner": "Millet porridge + Soaked almonds + Egg white omlette"
+                },
+                {
+                    "breakfast": "Whole grain bread sandwich + Vegetable salad + Guava slices",
+                    "lunch": "Brown rice + Fish curry + White channa curry + Cabbage thoran (Oliveoil) + Buttermilk",
+                    "dinner": "Broken wheat upma + dal curry + Green gram sprouts"
+                },
+                {
+                    "breakfast": "Oats (low fat milk) with dates and cinnamon + Orange",
+                    "lunch": "Millet rice + Fish curry + Snake gourd mezhukkupuratti (Olive oil)",
+                    "dinner": "Chapati + Vegetable curry + Vegetable soup"
                 }
             ]
         }
