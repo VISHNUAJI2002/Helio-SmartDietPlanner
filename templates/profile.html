@@ -110,7 +110,7 @@
                         <div class="metric-item"><strong>Sleep Hours:</strong> <span>{{ profile.sleep_hours }}</span>
                         </div>                                
                         <div class="metric-item"><strong>Dietary Preference:</strong> <span>{% if profile.dietary_preference == 'veg' %}Vegetarian
-                            {% elif profile.dietary_preference == 'non-veg' %}Non-Vegetarian{% else %}Both are fine{% endif %}</span></div>        
+                            {% elif profile.dietary_preference == 'non-veg' %}Non-Vegetarian{% else %}Any{% endif %}</span></div>        
                     </div>
                 </div>
 
@@ -246,9 +246,12 @@
             </div>
             <div class="modal-body">
                 <form method="POST" class="row g-3" id="update-profile-form">
-                    <div class="col-md-6">
+                   <div class="col-md-6">
                         <label class="form-label">Age</label>
-                        <input type="number" name="age" class="form-control" value="{{ profile.age }}" required>
+                        <input type="number" name="age" class="form-control" value="{{ profile.age }}" 
+                        min="5" max="120" 
+                        title="Please enter an age between 5 and 120." 
+                        placeholder="e.g., 25" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Gender</label>
@@ -259,11 +262,13 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Height (cm)</label>
-                        <input type="number" name="height_cm" class="form-control" value="{{ profile.height_cm }}">
+                        <input type="number" name="height_cm" class="form-control" value="{{ profile.height_cm }}"
+                        min="40" max="300" title="Entered height is out of range" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Weight (kg)</label>
-                        <input type="number" name="weight_kg" class="form-control" value="{{ profile.weight_kg }}">
+                        <input type="number" name="weight_kg" class="form-control" value="{{ profile.weight_kg }}"
+                        min="10" max="700" title="Entered weight is out of range" required>
                     </div>
                      <!-- START OF NEW CODE: Dietary Preference for Update Modal -->
                     <div class="col-md-6">
@@ -285,26 +290,31 @@
                     <div class="col-md-6">
                         <label class="form-label">BP Systolic</label>
                         <input type="number" name="blood_pressure_systolic" class="form-control"
-                            value="{{ profile.blood_pressure_systolic }}" placeholder="Optional, e.g., 120">
+                            value="{{ profile.blood_pressure_systolic }}" placeholder="Optional, e.g., 120"
+                            min="80" max="370" title="Entered BP Systolic value is out of range" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">BP Diastolic</label>
                         <input type="number" name="blood_pressure_diastolic" class="form-control"
-                            value="{{ profile.blood_pressure_diastolic }}" placeholder="Optional, e.g., 80">
+                            value="{{ profile.blood_pressure_diastolic }}" placeholder="Optional, e.g., 80"
+                            min="50" max="360" title="Entered BP Diastolic value is out of range" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Cholesterol (mg/dL)</label>
                         <input type="number" name="cholesterol_level" class="form-control"
-                            value="{{ profile.cholesterol_level }}" placeholder="Optional, e.g., 200">
+                            value="{{ profile.cholesterol_level }}" placeholder="Optional, e.g., 200"
+                            min="50" max="800" title="Entered cholestrol value is out of range" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Blood Sugar (mg/dL)</label>
                         <input type="number" name="blood_sugar_level" class="form-control"
-                            value="{{ profile.blood_sugar_level }}" placeholder="Optional, e.g., 100">
+                            value="{{ profile.blood_sugar_level }}" placeholder="Optional, e.g., 100"
+                            min="10" max="2656" title="Entered Blood sugar value is out of range" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Sleep Hours</label>
-                        <input type="number" name="sleep_hours" class="form-control" value="{{ profile.sleep_hours }}" placeholder="Optional, e.g., 7">
+                        <input type="number" name="sleep_hours" class="form-control" value="{{ profile.sleep_hours }}" placeholder="Optional, e.g., 7"
+                        min="0" max="24" title="please enter a valid number" required>
                     </div>
                     <div class="col-12 d-grid">
                         <button type="submit" class="btn btn-success btn-lg">Save Changes</button>
