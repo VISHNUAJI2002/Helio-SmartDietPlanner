@@ -10,7 +10,6 @@
     min-height: 80vh;
   }
 
-  /* Left: Tagline section */
   .left-col {
     display: flex;
     align-items: center;
@@ -34,7 +33,6 @@
     margin-top: 15px;
   }
 
-  /* Right: Login card */
   .right-col {
     display: flex;
     align-items: center;
@@ -73,7 +71,7 @@
   }
 
   #togglePassword {
-      cursor: pointer;
+    cursor: pointer;
   }
 
   @media (min-width: 768px) {
@@ -99,22 +97,48 @@
     <div class="col-12 col-md-6 right-col">
       <div class="login-card">
         <h2>Login</h2>
+
+        <!-- Flash message section -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
         <form method="POST">
-          <!-- --- MODIFIED: Changed username to email --- -->
+          <!-- Email Field -->
           <div class="mb-3">
             <label for="email" class="form-label">Email Address</label>
-            <input type="email" class="form-control" name="email" required>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              value="{{ request.form.get('email', '') }}"
+              required
+            >
           </div>
-          <!-- --- END MODIFIED --- -->
-          
+
+          <!-- Password Field -->
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>
             <div class="input-group">
-                <input type="password" class="form-control" id="password" name="password" required>
-                <!-- This is the icon that will toggle visibility -->
-                <span class="input-group-text" id="togglePassword">
-                    <i class="bi bi-eye-fill"></i>
-                </span>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                value="{{ request.form.get('password', '') }}"
+                required
+              >
+              <span class="input-group-text" id="togglePassword">
+                <i class="bi bi-eye-fill"></i>
+              </span>
             </div>
           </div>
 
@@ -123,11 +147,9 @@
           </div>
         </form>
 
-        <!-- --- NEW: Forgot Password Link --- -->
         <div class="text-center mt-2">
-            <a href="{{ url_for('forgot_password') }}" class="text-muted small">Forgot Password?</a>
+          <a href="{{ url_for('forgot_password') }}" class="text-muted small">Forgot Password?</a>
         </div>
-        <!-- --- END NEW --- -->
 
         <p class="text-center mt-3 mb-0">
           Don’t have an account?
@@ -138,31 +160,20 @@
   </div>
 </div>
 
-<!-- JavaScript to handle the show/hide functionality -->
+<!-- JavaScript for password visibility toggle -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
-        const eyeIcon = togglePassword.querySelector('i');
+  document.addEventListener('DOMContentLoaded', function () {
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = togglePassword.querySelector('i');
 
-        togglePassword.addEventListener('click', function () {
-            // Toggle the type attribute of the password input
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            
-            // Toggle the eye icon
-            if (type === 'password') {
-                // If it's a password, show the open eye
-                eyeIcon.classList.remove('bi-eye-slash-fill');
-                eyeIcon.classList.add('bi-eye-fill');
-            } else {
-                // If it's text, show the slashed eye
-                eyeIcon.classList.remove('bi-eye-fill');
-                eyeIcon.classList.add('bi-eye-slash-fill');
-            }
-        });
+    togglePassword.addEventListener('click', function () {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      eyeIcon.classList.toggle('bi-eye-fill');
+      eyeIcon.classList.toggle('bi-eye-slash-fill');
     });
+  });
 </script>
 
 {% endblock %}
-
