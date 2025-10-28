@@ -10,6 +10,7 @@
     min-height: 80vh;
   }
 
+  /* Left: Tagline section */
   .left-col {
     display: flex;
     align-items: center;
@@ -33,6 +34,7 @@
     margin-top: 15px;
   }
 
+  /* Right: Login card */
   .right-col {
     display: flex;
     align-items: center;
@@ -98,33 +100,18 @@
     <div class="col-12 col-md-6 right-col">
       <div class="login-card">
         <h2>Login</h2>
-
-        <!-- Flash message section -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-
+        <!-- Removed duplicate flash message section here -->
         <form method="POST">
-          <!-- Email Field -->
           <div class="mb-3">
             <label for="email" class="form-label">Email Address</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ request.form.get('email', '') }}"
-              required>
+            <input type="email" class="form-control" name="email" value="{{ request.form.email or '' }}" required>
           </div>
 
-          <!-- Password Field -->
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>
             <div class="input-group">
               <input type="password" class="form-control" id="password" name="password"
-                value="{{ request.form.get('password', '') }}" required>
+                value="{{ request.form.password or '' }}" required>
               <span class="input-group-text" id="togglePassword">
                 <i class="bi bi-eye-fill"></i>
               </span>
@@ -149,7 +136,7 @@
   </div>
 </div>
 
-<!-- JavaScript for password visibility toggle -->
+<!-- JavaScript for show/hide password -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const togglePassword = document.getElementById('togglePassword');
@@ -159,8 +146,14 @@
     togglePassword.addEventListener('click', function () {
       const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
       passwordInput.setAttribute('type', type);
-      eyeIcon.classList.toggle('bi-eye-fill');
-      eyeIcon.classList.toggle('bi-eye-slash-fill');
+
+      if (type === 'password') {
+        eyeIcon.classList.remove('bi-eye-slash-fill');
+        eyeIcon.classList.add('bi-eye-fill');
+      } else {
+        eyeIcon.classList.remove('bi-eye-fill');
+        eyeIcon.classList.add('bi-eye-slash-fill');
+      }
     });
   });
 </script>
