@@ -1,33 +1,53 @@
+# =============================================
+#  Smart Diet Planner - Random Forest Model Training
+# =============================================
+
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.metrics import classification_report, confusion_matrix
-from imblearn.over_sampling import SMOTE
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
-import joblib
 import os
+import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Make sure model directory exists
-os.makedirs("model", exist_ok=True)
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
-# 1. Load dataset
-df = pd.read_csv("data/synthetic_diet_dataset_encoded.csv")
+# ---------------------------------------------
+# 1. Setup paths
+# ---------------------------------------------
+DATA_PATH = "data/synthetic_diet_dataset_encoded.csv"
+MODEL_DIR = "model"
+MODEL_FILE = os.path.join(MODEL_DIR, "diet_model.pkl")
+SCALER_FILE = os.path.join(MODEL_DIR, "scaler.pkl")
+ENCODER_FILE = os.path.join(MODEL_DIR, "meal_encoder.pkl")
 
-# --- Handle missing values ---
+# Ensure model directory exists
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+# ---------------------------------------------
+# 2. Load Dataset
+# ---------------------------------------------
+print("📂 Loading dataset...")
+df = pd.read_csv(DATA_PATH)
+
+# Handle missing values
 df.replace("", np.nan, inplace=True)
 df.fillna(df.mean(numeric_only=True), inplace=True)
 
-# 2. Encode categorical fields if they exist
+# ---------------------------------------------
+# 3. Encode categorical columns if present
+# ---------------------------------------------
 if "gender" in df.columns:
     df["gender"] = LabelEncoder().fit_transform(df["gender"].astype(str))
 
 if "chronic_disease" in df.columns:
     df["chronic_disease"] = LabelEncoder().fit_transform(df["chronic_disease"].astype(str))
 
-# 3. Features (X) and Target (y)
+# ---------------------------------------------
+# 4. Split features and target
+# ---------------------------------------------
 X = df.drop(["Meal_Plan", "Meal_Plan_Encoded"], axis=1)
 y = df["Meal_Plan_Encoded"]
 
@@ -35,69 +55,67 @@ y = df["Meal_Plan_Encoded"]
 meal_encoder = LabelEncoder()
 y = meal_encoder.fit_transform(y)
 
-# Save encoder for Flask app
-joblib.dump(meal_encoder, "model/meal_encoder.pkl")
+# Save target encoder for Flask app
+joblib.dump(meal_encoder, ENCODER_FILE)
 
-# 4. Balance dataset using SMOTE
-smote = SMOTE(random_state=42)
-X_resampled, y_resampled = smote.fit_resample(X, y)
-
+# ---------------------------------------------
 # 5. Train-test split
+# ---------------------------------------------
 X_train, X_test, y_train, y_test = train_test_split(
-    X_resampled, y_resampled, test_size=0.2, random_state=42
+    X, y, test_size=0.2, random_state=42
 )
 
+# ---------------------------------------------
 # 6. Feature scaling
+# ---------------------------------------------
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
+joblib.dump(scaler, SCALER_FILE)
 
-# Save scaler
-joblib.dump(scaler, "model/scaler.pkl")
-
-# 7. Build neural network model
-model = Sequential([
-    Dense(128, activation="relu", input_shape=(X_train.shape[1],)),
-    Dropout(0.3),
-    Dense(64, activation="relu"),
-    Dropout(0.3),
-    Dense(len(np.unique(y)), activation="softmax")
-])
-
-model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
-
-# 8. Train model
-history = model.fit(
-    X_train, y_train,
-    validation_data=(X_test, y_test),
-    epochs=30,
-    batch_size=32,
-    verbose=1
+# ---------------------------------------------
+# 7. Train Random Forest model
+# ---------------------------------------------
+print("🌲 Training Random Forest model...")
+model = RandomForestClassifier(
+    n_estimators=120,       # Number of trees
+    max_depth=12,           # Limit depth to prevent overfitting
+    class_weight="balanced",
+    random_state=42
 )
+model.fit(X_train, y_train)
 
-# 9. Evaluate
-y_pred = np.argmax(model.predict(X_test), axis=1)
-print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
-# Convert to string labels for readability
-class_names = [str(c) for c in meal_encoder.classes_]
-print("Classification Report:\n", classification_report(y_test, y_pred, target_names=class_names))
+# ---------------------------------------------
+# 8. Evaluate model
+# ---------------------------------------------
+y_pred = model.predict(X_test)
 
+print("\n✅ Model Evaluation Results:")
+print("Accuracy:", round(accuracy_score(y_test, y_pred), 3))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+# ---------------------------------------------
+# 9. Confusion Matrix Visualization
+# ---------------------------------------------
+encoded_to_meal = df.drop_duplicates(subset=['Meal_Plan_Encoded']) \
+                    .set_index('Meal_Plan_Encoded')['Meal_Plan'] \
+                    .sort_index().to_dict()
+class_labels = [encoded_to_meal[i] for i in sorted(df['Meal_Plan_Encoded'].unique())]
+
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Greens',
+            xticklabels=class_labels, yticklabels=class_labels)
+plt.xlabel("Predicted Meal Plan")
+plt.ylabel("True Meal Plan")
+plt.title("Confusion Matrix - Random Forest")
+plt.show()
+
+# ---------------------------------------------
 # 10. Save model
-# Ensure model folder exists
-os.makedirs("model", exist_ok=True)
+# ---------------------------------------------
+joblib.dump(model, MODEL_FILE)
+print(f"\n💾 Model saved successfully as: {MODEL_FILE}")
+print("💾 Scaler and encoder also saved in model/ folder.")
 
-# Save in new Keras format (.keras)
-try:
-    model.save("model/diet_model.keras")   # no save_format needed
-    print("✅ Model saved in Keras format: model/diet_model.keras")
-except Exception as e:
-    print("⚠️ Keras format save failed:", e)
-
-# Save fallback in .h5 format
-try:
-    model.save("model/diet_model.h5")
-    print("✅ Model also saved in HDF5 format: model/diet_model.h5")
-except Exception as e:
-    print("❌ HDF5 save failed:", e)
-
-
+print("\n✅ Training completed successfully!")
